@@ -1,14 +1,27 @@
 require 'sinatra/base'
 require 'json'
+require_relative 'ledger'
 
 module ExpenseTracker
   class API < Sinatra::Base
-    post '/expenses' do
-      #send back (responce body) Json including expense
-      JSON.generate('expense_id' => 42)
+    def initialize(ledger: Ledger.new)
+      @ledger = ledger
+      super()
     end
-    
-    #route for reading back data 
+
+    post '/expenses' do
+      #status 404 this is to deliberatly break the app - to tst the test
+      expense = JSON.parse(request.body.read)
+      result = @ledger.record(expense)
+      
+      if result.success?
+        JSON.generate('expense_id' => result.expense_id)
+      else
+        status 422
+        JSON.generate('error' => result.error_message)
+      end
+    end
+
     get '/expenses/:date' do
       JSON.generate([])
     end
