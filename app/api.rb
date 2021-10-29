@@ -9,7 +9,7 @@ module ExpenseTracker
       super()
     end
 
-    post '/expenses' do
+    post '/expenses' do 
       #status 404 this is to deliberatly break the app - to tst the test
       expense = JSON.parse(request.body.read)
       result = @ledger.record(expense)
@@ -23,7 +23,7 @@ module ExpenseTracker
     end
 
     get '/expenses/:date' do
-      JSON.generate([])
+      JSON.generate(@ledger.expenses_on(params[:date]))
     end
   end
 end
